@@ -73,7 +73,7 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="p-6 space-y-6" style={{ background: 'linear-gradient(135deg, #FFFF0F2 0%, #FFDEE2 100%)' }}>
+    <div className="p-6 space-y-6" style={{ background: 'linear-gradient(135deg, #FFDEE2 0%, #FFDEE2 100%)' }}>
       <div>
         <h1 className="text-2xl font-bold" style={{ color: '#23174B' }}>Dashboard</h1>
         <p style={{ color: '#6D2F5A' }}>Overview of contract analysis activities</p>
@@ -178,7 +178,6 @@ const Dashboard = () => {
                 outerRadius={100}
                 dataKey="value"
                 label={({ name, value }) => `${name}: ${value}`}
-                labelStyle={{ fill: '#23174B', fontSize: '12px' }}
               >
                 {riskData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
