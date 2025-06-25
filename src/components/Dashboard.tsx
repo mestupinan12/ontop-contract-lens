@@ -1,6 +1,6 @@
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { FileText, AlertTriangle, CheckCircle, TrendingUp } from 'lucide-react';
+import { FileText, AlertTriangle, CheckCircle, TrendingUp, Clock } from 'lucide-react';
 
 const Dashboard = () => {
   // Mock data for demonstration
@@ -17,6 +17,16 @@ const Dashboard = () => {
     { month: 'Apr', contracts: 22, risks: 8 },
     { month: 'May', contracts: 28, risks: 5 },
     { month: 'Jun', contracts: 35, risks: 7 },
+  ];
+
+  const contractTypes = [
+    { name: 'Partnership Agreement', sla: '4 days', priority: 'high' },
+    { name: 'PSP Agreement', sla: '8 days', priority: 'medium' },
+    { name: 'Vendor Agreement', sla: '7 days', priority: 'medium' },
+    { name: 'MSA (Master Service Agreement)', sla: '8 days', priority: 'medium' },
+    { name: 'Service Agreement', sla: '7 days', priority: 'medium' },
+    { name: 'DPA (Data Processing Agreement)', sla: '7 days', priority: 'medium' },
+    { name: 'NDA (Non-Disclosure Agreement)', sla: '7 days', priority: 'medium' },
   ];
 
   const stats = [
@@ -83,6 +93,39 @@ const Dashboard = () => {
             </div>
           );
         })}
+      </div>
+
+      {/* Contract Types & SLAs Section */}
+      <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+            <Clock className="w-5 h-5 text-blue-600" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900">Contract Types & SLAs</h3>
+            <p className="text-sm text-gray-600">Expected review times for different contract types</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {contractTypes.map((contract, index) => (
+            <div key={index} className="p-4 bg-gray-50 rounded-lg border border-gray-100 hover:bg-gray-100 transition-colors">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-medium text-gray-900 text-sm">{contract.name}</h4>
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                  contract.priority === 'high' 
+                    ? 'bg-orange-100 text-orange-800' 
+                    : 'bg-blue-100 text-blue-800'
+                }`}>
+                  SLA: {contract.sla}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4 text-gray-400" />
+                <span className="text-sm text-gray-600">Review within {contract.sla}</span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Charts Section */}
