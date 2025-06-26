@@ -13,11 +13,16 @@ const Dashboard = () => {
     { name: 'NDA (Non-Disclosure Agreement)', sla: '7 days', priority: 'medium' },
   ];
 
+  const monthlyData = [
+    { month: 'May', fullyExecuted: 40 },
+    { month: 'June', fullyExecuted: 61 },
+  ];
+
   const stats = [
     {
       title: 'Total Contracts',
-      value: 'XXX',
-      change: 'Placeholder',
+      value: '76',
+      change: 'June 2024',
       changeType: 'neutral' as const,
       icon: FileText,
       bgColor: 'bg-gradient-to-br from-[#FFDEE2] to-[#FFBDC6]',
@@ -26,8 +31,8 @@ const Dashboard = () => {
     },
     {
       title: 'Fully Executed',
-      value: 'XXX',
-      change: 'Placeholder',
+      value: '61',
+      change: 'June 2024',
       changeType: 'neutral' as const,
       icon: CheckCircle,
       bgColor: 'bg-gradient-to-br from-[#FFBDC6] to-[#FFDEE2]',
@@ -78,6 +83,51 @@ const Dashboard = () => {
         })}
       </div>
 
+      {/* Monthly Chart */}
+      <div className="bg-white/90 backdrop-blur-sm rounded-lg p-6 border border-white/50 shadow-lg">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-lg flex items-center justify-center shadow-md" style={{ background: 'linear-gradient(135deg, #DE485D, #FF5A70)' }}>
+            <TrendingUp className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold" style={{ color: '#23174B' }}>Monthly Fully Executed Contracts</h3>
+            <p className="text-sm" style={{ color: '#6D2F5A' }}>May vs June comparison</p>
+          </div>
+        </div>
+        <div className="h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={monthlyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#FFBDC6" />
+              <XAxis 
+                dataKey="month" 
+                stroke="#6D2F5A"
+                fontSize={12}
+                fontWeight={500}
+              />
+              <YAxis 
+                stroke="#6D2F5A"
+                fontSize={12}
+                fontWeight={500}
+              />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: 'white', 
+                  border: '1px solid #FFBDC6',
+                  borderRadius: '8px',
+                  color: '#23174B'
+                }}
+              />
+              <Bar 
+                dataKey="fullyExecuted" 
+                fill="#DE485D"
+                radius={[4, 4, 0, 0]}
+                name="Fully Executed"
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
       {/* Contract Types & SLAs Section */}
       <div className="bg-white/90 backdrop-blur-sm rounded-lg p-6 border border-white/50 shadow-lg">
         <div className="flex items-center gap-3 mb-6">
@@ -113,15 +163,15 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Recent Activity */}
+      {/* Recent Analysis */}
       <div className="bg-white/90 backdrop-blur-sm rounded-lg p-6 border border-white/50 shadow-lg">
         <h3 className="text-lg font-semibold mb-4" style={{ color: '#23174B' }}>Recent Analysis</h3>
         <div className="space-y-4">
           {[
-            { name: 'Service Agreement - TechCorp', status: 'Approved', time: '2 hours ago', statusColor: '#FFBDC6' },
-            { name: 'Employment Contract - Jane Doe', status: 'Under Review', time: '4 hours ago', statusColor: '#FF8C9C' },
-            { name: 'NDA - ClientCo', status: 'Approved', time: '1 day ago', statusColor: '#FFBDC6' },
-            { name: 'Partnership Agreement - StartupXYZ', status: 'Pending', time: '2 days ago', statusColor: '#DE485D' },
+            { name: 'MSA — Finerio', status: 'Approved', time: '2 hours ago', statusColor: '#FFBDC6' },
+            { name: 'DPA — DIIO', status: 'Under Review', time: '4 hours ago', statusColor: '#FF8C9C' },
+            { name: 'NDA — Kontigo', status: 'Approved', time: '1 day ago', statusColor: '#FFBDC6' },
+            { name: 'Others', status: 'Pending', time: '2 days ago', statusColor: '#DE485D' },
           ].map((item, index) => (
             <div key={index} className="flex items-center justify-between p-3 hover:bg-white/70 rounded-lg transition-colors">
               <div className="flex items-center gap-3">
