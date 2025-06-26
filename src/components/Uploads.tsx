@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Upload, FileText, Trash2, Download, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,7 +7,7 @@ const Uploads = () => {
   const [uploadedFiles, setUploadedFiles] = useState([
     {
       id: 1,
-      name: 'Service_Agreement_TechCorp.pdf',
+      name: 'MSA_Finerio.pdf',
       size: '2.4 MB',
       uploadDate: '2024-06-20',
       status: 'Analyzed',
@@ -16,7 +15,7 @@ const Uploads = () => {
     },
     {
       id: 2,
-      name: 'Employment_Contract_JaneDoe.docx',
+      name: 'DPA_DIIO.pdf',
       size: '1.8 MB',
       uploadDate: '2024-06-19',
       status: 'Analyzed',
@@ -24,11 +23,19 @@ const Uploads = () => {
     },
     {
       id: 3,
-      name: 'NDA_ClientCo.pdf',
-      size: '950 KB',
+      name: 'NDA_Kontigo.pdf',
+      size: '1.5 MB',
       uploadDate: '2024-06-18',
-      status: 'Pending',
-      riskLevel: null
+      status: 'Analyzed',
+      riskLevel: 'Low'
+    },
+    {
+      id: 4,
+      name: 'Others.pdf',
+      size: '900 KB',
+      uploadDate: '2024-06-17',
+      status: 'Analyzed',
+      riskLevel: 'Medium'
     }
   ]);
 

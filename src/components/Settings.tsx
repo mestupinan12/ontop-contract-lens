@@ -213,9 +213,13 @@ const Settings = () => {
         <CardContent className="space-y-4">
           <div className="space-y-3">
             {[
-              { name: 'Sarah Johnson', role: 'Admin', email: 'sarah@ontop.com' },
-              { name: 'Mike Chen', role: 'Analyst', email: 'mike@ontop.com' },
-              { name: 'Emma Wilson', role: 'Viewer', email: 'emma@ontop.com' }
+              { name: 'Carolina Rincon', role: 'Admin', email: 'carolina@legtop.com' },
+              { name: 'Rafael Cestari', role: 'Admin', email: 'rafael@legtop.com' },
+              { name: 'Alejandro Garcia', role: 'Analyst', email: 'alejandro@legtop.com' },
+              { name: 'Fadia Faraj', role: 'Analyst', email: 'fadia@legtop.com' },
+              { name: 'Elisa Correa', role: 'Analyst', email: 'elisa@legtop.com' },
+              { name: 'Gabriel Espinosa', role: 'Viewer', email: 'gabriel@legtop.com' },
+              { name: 'Mikaela Estupiñán', role: 'Viewer', email: 'mikaela@legtop.com' }
             ].map((member, index) => (
               <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                 <div>
