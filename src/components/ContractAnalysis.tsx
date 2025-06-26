@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Upload, FileText, Send, AlertTriangle, Shield, CheckCircle, Wifi, WifiOff, Play, Download, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,44 +9,48 @@ const ContractAnalysis = () => {
   const [contractText, setContractText] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResults, setAnalysisResults] = useState<any>(null);
-  const [webhookUrl, setWebhookUrl] = useState('');
+  const [webhookUrl, setWebhookUrl] = useState('https://emikaela.app.n8n.cloud/webhook/ffbe24ae-bd73-4232-acc4-d37b4a268452');
   const [isConnected, setIsConnected] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
   const { toast } = useToast();
 
-  // Mock recent analyses data
+  // Updated recent analyses data
   const recentAnalyses = [
     {
       id: 1,
-      name: 'Partnership Agreement - TechStartup Inc',
+      name: 'MSA - Finerio',
       date: '2024-01-15',
       time: '14:30',
-      status: 'High Risk',
-      statusColor: '#DE485D'
+      status: 'Approved',
+      statusColor: '#FFBDC6',
+      timeAgo: '2 hours ago'
     },
     {
       id: 2,
-      name: 'Service Agreement - ClientCorp',
+      name: 'DPA - DIIO',
       date: '2024-01-15',
       time: '11:45',
-      status: 'Low Risk',
-      statusColor: '#FFBDC6'
+      status: 'Under Review',
+      statusColor: '#FF8C9C',
+      timeAgo: '4 hours ago'
     },
     {
       id: 3,
-      name: 'NDA - Innovation Labs',
+      name: 'NDA - Kontigo',
       date: '2024-01-14',
       time: '16:20',
-      status: 'Medium Risk',
-      statusColor: '#FF8C9C'
+      status: 'Approved',
+      statusColor: '#FFBDC6',
+      timeAgo: '1 day ago'
     },
     {
       id: 4,
-      name: 'Vendor Agreement - SupplyCo',
+      name: 'Other - Miscellaneous',
       date: '2024-01-14',
       time: '09:15',
-      status: 'Low Risk',
-      statusColor: '#FFBDC6'
+      status: 'Pending',
+      statusColor: '#DE485D',
+      timeAgo: '2 days ago'
     }
   ];
 
@@ -89,7 +92,7 @@ const ContractAnalysis = () => {
         body: JSON.stringify({
           test: true,
           timestamp: new Date().toISOString(),
-          source: 'ontop-legal-dashboard-test'
+          source: 'legtop-dashboard-test'
         }),
       });
 
@@ -150,7 +153,7 @@ const ContractAnalysis = () => {
         body: JSON.stringify({
           contract_text: contractText,
           timestamp: new Date().toISOString(),
-          source: 'ontop-legal-dashboard'
+          source: 'legtop-dashboard'
         }),
       });
 
@@ -467,7 +470,7 @@ const ContractAnalysis = () => {
                   <FileText className="w-5 h-5" style={{ color: '#6D2F5A' }} />
                   <div>
                     <p className="font-medium text-sm" style={{ color: '#23174B' }}>{analysis.name}</p>
-                    <p className="text-xs" style={{ color: '#6D2F5A' }}>{analysis.date} at {analysis.time}</p>
+                    <p className="text-xs" style={{ color: '#6D2F5A' }}>{analysis.timeAgo}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
