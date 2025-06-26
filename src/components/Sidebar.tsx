@@ -34,15 +34,15 @@ const Sidebar = ({ activeSection, onSectionChange }: SidebarProps) => {
       <div className="p-4 border-b border-gray-200 flex items-center justify-between">
         {!isCollapsed && (
           <div>
-            <h1 className="text-xl font-bold text-gray-900">Ontop Legal</h1>
-            <p className="text-sm text-gray-500">Contract Analysis</p>
+            <h1 className="text-xl font-bold text-black">Legtop AI</h1>
+            <p className="text-sm text-black">Contract Analysis</p>
           </div>
         )}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
         >
-          {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+          {isCollapsed ? <ChevronRight size={18} className="text-black" /> : <ChevronLeft size={18} className="text-black" />}
         </button>
       </div>
 
@@ -61,12 +61,12 @@ const Sidebar = ({ activeSection, onSectionChange }: SidebarProps) => {
                     "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-all duration-200",
                     isActive 
                       ? "bg-blue-50 text-blue-700 border border-blue-200" 
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      : "text-black hover:bg-gray-50"
                   )}
                 >
                   <Icon size={20} className={cn(
                     "flex-shrink-0",
-                    isActive ? "text-blue-700" : "text-gray-400"
+                    isActive ? "text-blue-700" : "text-black"
                   )} />
                   {!isCollapsed && (
                     <span className="font-medium">{item.name}</span>
@@ -86,8 +86,8 @@ const Sidebar = ({ activeSection, onSectionChange }: SidebarProps) => {
               <span className="text-white text-sm font-medium">LT</span>
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-900">Legal Team</p>
-              <p className="text-xs text-gray-500">Ontop</p>
+              <p className="text-sm font-medium text-black">Legal Team</p>
+              <p className="text-xs text-black">Legtop</p>
             </div>
           </div>
         </div>
