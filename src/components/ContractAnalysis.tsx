@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Upload, FileText, Send, AlertTriangle, Shield, CheckCircle, Wifi, WifiOff, Play, Download, Eye } from 'lucide-react';
+import { Upload, FileText, Send, AlertTriangle, Shield, CheckCircle, Wifi, WifiOff, Play, Download, Eye, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,7 +9,7 @@ const ContractAnalysis = () => {
   const [contractText, setContractText] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResults, setAnalysisResults] = useState<any>(null);
-  const [webhookUrl, setWebhookUrl] = useState('https://emikaela.app.n8n.cloud/webhook/ffbe24ae-bd73-4232-acc4-d37b4a268452');
+  const [webhookUrl, setWebhookUrl] = useState('http://localhost:5678');
   const [isConnected, setIsConnected] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
   const { toast } = useToast();
@@ -265,35 +265,51 @@ const ContractAnalysis = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-2">
-            <div className="flex-1">
-              <input
-                type="url"
-                value={webhookUrl}
-                onChange={(e) => setWebhookUrl(e.target.value)}
-                placeholder="https://your-n8n-instance.com/webhook/contract-analysis"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <p className="text-xs mt-1" style={{ color: '#6D2F5A' }}>Enter your N8N webhook URL for contract analysis</p>
+          <div className="space-y-3">
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <input
+                  type="url"
+                  value={webhookUrl}
+                  onChange={(e) => setWebhookUrl(e.target.value)}
+                  placeholder="http://localhost:5678"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <p className="text-xs mt-1" style={{ color: '#6D2F5A' }}>Enter your N8N webhook URL for contract analysis</p>
+              </div>
+              <Button
+                onClick={testConnection}
+                disabled={isTesting || !webhookUrl.trim()}
+                variant="outline"
+                className="shrink-0"
+              >
+                {isTesting ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-2"></div>
+                    Testing...
+                  </>
+                ) : (
+                  <>
+                    <Play className="w-4 h-4 mr-2" />
+                    Test AI
+                  </>
+                )}
+              </Button>
             </div>
-            <Button
-              onClick={testConnection}
-              disabled={isTesting || !webhookUrl.trim()}
-              variant="outline"
-              className="shrink-0"
-            >
-              {isTesting ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-2"></div>
-                  Testing...
-                </>
-              ) : (
-                <>
-                  <Play className="w-4 h-4 mr-2" />
-                  Test AI
-                </>
-              )}
-            </Button>
+            
+            {/* Quick Access Link */}
+            <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
+              <span className="text-sm font-medium" style={{ color: '#6D2F5A' }}>Quick Access:</span>
+              <a
+                href={webhookUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 hover:underline"
+              >
+                {webhookUrl}
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
           </div>
         </CardContent>
       </Card>
