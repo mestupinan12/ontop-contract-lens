@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Save, Bell, Shield, Database, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -215,11 +214,11 @@ const Settings = () => {
             {[
               { name: 'Carolina Rincon', role: 'Admin', email: 'carolina@legtop.com' },
               { name: 'Rafael Cestari', role: 'Admin', email: 'rafael@legtop.com' },
-              { name: 'Alejandro Garcia', role: 'Analyst', email: 'alejandro@legtop.com' },
-              { name: 'Fadia Faraj', role: 'Analyst', email: 'fadia@legtop.com' },
-              { name: 'Elisa Correa', role: 'Analyst', email: 'elisa@legtop.com' },
-              { name: 'Gabriel Espinosa', role: 'Viewer', email: 'gabriel@legtop.com' },
-              { name: 'Mikaela Estupiñán', role: 'Viewer', email: 'mikaela@legtop.com' }
+              { name: 'Alejandro Garcia', role: 'Admin', email: 'alejandro@legtop.com' },
+              { name: 'Fadia Faraj', role: 'Admin', email: 'fadia@legtop.com' },
+              { name: 'Elisa Correa', role: 'Admin', email: 'elisa@legtop.com' },
+              { name: 'Gabriel Espinosa', role: 'Admin', email: 'gabriel@legtop.com' },
+              { name: 'Mikaela Estupiñán', role: 'Admin', email: 'mikaela@legtop.com' }
             ].map((member, index) => (
               <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                 <div>
