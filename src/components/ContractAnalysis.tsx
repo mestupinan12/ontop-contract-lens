@@ -4,15 +4,16 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { useSettings } from '@/contexts/SettingsContext';
 
 const ContractAnalysis = () => {
   const [contractText, setContractText] = useState('');
+  const [uploadedFileName, setUploadedFileName] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysisResults, setAnalysisResults] = useState<any>(null);
-  const [webhookUrl, setWebhookUrl] = useState('https://emikaela.app.n8n.cloud/webhook/from-bubble');
-  const [isConnected, setIsConnected] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState<string | null>(null);
   const [isTesting, setIsTesting] = useState(false);
   const { toast } = useToast();
+  const { webhookUrl, setWebhookUrl, isConnected, setIsConnected } = useSettings();
 
   // Updated recent analyses data
   const recentAnalyses = [
@@ -57,6 +58,7 @@ const ContractAnalysis = () => {
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      setUploadedFileName(file.name);
       const reader = new FileReader();
       reader.onload = (e) => {
         const text = e.target?.result as string;
@@ -106,7 +108,7 @@ const ContractAnalysis = () => {
         setIsConnected(false);
         toast({
           title: "Connection Failed",
-          description: "Unable to reach the N8N webhook",
+          description: `Unable to reach the N8N webhook (Status: ${response.status})`,
           variant: "destructive",
         });
       }
@@ -114,8 +116,9 @@ const ContractAnalysis = () => {
       console.error("Connection test failed:", error);
       setIsConnected(false);
       toast({
-        title: "Connection Test",
-        description: "Demo mode - connection test completed",
+        title: "Connection Failed",
+        description: "Unable to reach the N8N webhook. Please check your URL and network connection.",
+        variant: "destructive",
       });
     } finally {
       setIsTesting(false);
@@ -135,13 +138,14 @@ const ContractAnalysis = () => {
     if (!webhookUrl.trim()) {
       toast({
         title: "Error", 
-        description: "Please enter your N8N webhook URL",
+        description: "Please configure your N8N webhook URL in Settings",
         variant: "destructive",
       });
       return;
     }
 
     setIsAnalyzing(true);
+    setAnalysisResult(null);
     console.log("Sending contract to N8N webhook:", webhookUrl);
 
     try {
@@ -152,86 +156,41 @@ const ContractAnalysis = () => {
         },
         body: JSON.stringify({
           contract_text: contractText,
+          file_name: uploadedFileName || 'contract.txt',
           timestamp: new Date().toISOString(),
           source: 'legtop-dashboard'
         }),
       });
 
       if (response.ok) {
-        const data = await response.json();
-        setAnalysisResults(data);
+        const data = await response.text();
+        setAnalysisResult(data);
         setIsConnected(true);
         
         toast({
           title: "Analysis Complete",
-          description: "Contract has been successfully analyzed",
+          description: "Contract has been successfully analyzed by N8N",
         });
       } else {
-        // Mock results for demo purposes
-        const mockResults = {
-          risk_score: Math.floor(Math.random() * 100),
-          issues_detected: Math.floor(Math.random() * 10) + 1,
-          clause_types: ['Liability', 'Termination', 'Payment Terms'],
-          recommendations: [
-            'Review liability clause for excessive risk exposure',
-            'Consider adding force majeure provisions',
-            'Clarify payment terms and late fees'
-          ],
-          key_insights: [
-            'Contract contains standard liability limitations',
-            'Termination clauses favor the other party',
-            'Payment terms are within industry standards'
-          ],
-          flagged_clauses: [
-            'Section 4.2: Unlimited liability exposure',
-            'Section 7.1: Immediate termination without cause'
-          ]
-        };
-        setAnalysisResults(mockResults);
-        
+        setIsConnected(false);
         toast({
-          title: "Analysis Complete",
-          description: "Contract has been analyzed (using demo data)",
+          title: "Analysis Failed",
+          description: `N8N webhook returned error (Status: ${response.status})`,
+          variant: "destructive",
         });
       }
     } catch (error) {
       console.error("Error analyzing contract:", error);
-      
-      // Show mock results for demo
-      const mockResults = {
-        risk_score: Math.floor(Math.random() * 100),
-        issues_detected: Math.floor(Math.random() * 10) + 1,
-        clause_types: ['Liability', 'Termination', 'Payment Terms'],
-        recommendations: [
-          'Review liability clause for excessive risk exposure',
-          'Consider adding force majeure provisions',
-          'Clarify payment terms and late fees'
-        ],
-        key_insights: [
-          'Contract contains standard liability limitations',
-          'Termination clauses favor the other party',
-          'Payment terms are within industry standards'
-        ],
-        flagged_clauses: [
-          'Section 4.2: Unlimited liability exposure',
-          'Section 7.1: Immediate termination without cause'
-        ]
-      };
-      setAnalysisResults(mockResults);
+      setIsConnected(false);
       
       toast({
-        title: "Demo Mode",
-        description: "Showing mock analysis results for demonstration",
+        title: "Analysis Failed",
+        description: "Unable to connect to N8N webhook. Please check your configuration.",
+        variant: "destructive",
       });
     } finally {
       setIsAnalyzing(false);
     }
-  };
-
-  const getRiskLevel = (score: number) => {
-    if (score >= 70) return { level: 'High', color: 'text-red-600', bg: 'bg-red-50' };
-    if (score >= 40) return { level: 'Medium', color: 'text-yellow-600', bg: 'bg-yellow-50' };
-    return { level: 'Low', color: 'text-green-600', bg: 'bg-green-50' };
   };
 
   return (
@@ -272,10 +231,12 @@ const ContractAnalysis = () => {
                   type="url"
                   value={webhookUrl}
                   onChange={(e) => setWebhookUrl(e.target.value)}
-                  placeholder="https://emikaela.app.n8n.cloud/webhook/from-bubble"
+                  placeholder="https://your-n8n-instance.com/webhook/contract-analysis"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
-                <p className="text-xs mt-1" style={{ color: '#6D2F5A' }}>Enter your N8N webhook URL for contract analysis</p>
+                <p className="text-xs mt-1" style={{ color: '#6D2F5A' }}>
+                  Enter your N8N webhook URL for contract analysis. Configure this in Settings for persistence.
+                </p>
               </div>
               <Button
                 onClick={testConnection}
@@ -291,7 +252,7 @@ const ContractAnalysis = () => {
                 ) : (
                   <>
                     <Play className="w-4 h-4 mr-2" />
-                    Test AI
+                    Test Connection
                   </>
                 )}
               </Button>
@@ -317,11 +278,13 @@ const ContractAnalysis = () => {
               </label>
               <label className="w-full flex flex-col items-center px-4 py-6 bg-gray-50 text-gray-500 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer hover:bg-gray-100 transition-colors">
                 <Upload className="w-8 h-8" />
-                <span className="mt-2 text-sm">Click to upload file</span>
+                <span className="mt-2 text-sm">
+                  {uploadedFileName ? uploadedFileName : 'Click to upload file'}
+                </span>
                 <input
                   type="file"
                   className="hidden"
-                  accept=".txt,.doc,.docx"
+                  accept=".txt,.doc,.docx,.pdf"
                   onChange={handleFileUpload}
                 />
               </label>
@@ -343,7 +306,7 @@ const ContractAnalysis = () => {
             {/* Review Button */}
             <Button 
               onClick={analyzeContract}
-              disabled={isAnalyzing || (!contractText.trim() && !webhookUrl.trim())}
+              disabled={isAnalyzing || !contractText.trim() || !webhookUrl.trim()}
               className="w-full"
               size="lg"
               style={{ backgroundColor: '#DE485D' }}
@@ -356,7 +319,7 @@ const ContractAnalysis = () => {
               ) : (
                 <>
                   <Send className="w-4 h-4 mr-2" />
-                  Review Contract
+                  Send to N8N for Analysis
                 </>
               )}
             </Button>
@@ -372,87 +335,32 @@ const ContractAnalysis = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {analysisResults ? (
+            {analysisResult ? (
               <div className="space-y-4">
-                {/* Risk Score */}
-                <div className="p-4 rounded-lg border">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium" style={{ color: '#6D2F5A' }}>Overall Risk Score</span>
-                    <span className={`text-2xl font-bold ${getRiskLevel(analysisResults.risk_score).color}`}>
-                      {analysisResults.risk_score}/100
-                    </span>
-                  </div>
-                  <div className="mt-2">
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div 
-                        className={`h-2 rounded-full ${
-                          analysisResults.risk_score >= 70 ? 'bg-red-500' :
-                          analysisResults.risk_score >= 40 ? 'bg-yellow-500' : 'bg-green-500'
-                        }`}
-                        style={{ width: `${analysisResults.risk_score}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                  <span className={`inline-block mt-2 px-2 py-1 rounded-full text-xs font-medium ${getRiskLevel(analysisResults.risk_score).bg} ${getRiskLevel(analysisResults.risk_score).color}`}>
-                    {getRiskLevel(analysisResults.risk_score).level} Risk
-                  </span>
-                </div>
-
-                {/* Key Insights */}
-                <div className="p-4 rounded-lg border">
-                  <h4 className="font-medium mb-2" style={{ color: '#23174B' }}>Key AI Insights</h4>
-                  <ul className="space-y-1">
-                    {analysisResults.key_insights?.map((insight: string, index: number) => (
-                      <li key={index} className="text-sm flex items-start gap-2" style={{ color: '#6D2F5A' }}>
-                        <CheckCircle className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
-                        {insight}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Flagged Clauses */}
-                <div className="p-4 rounded-lg border">
+                <div className="p-4 rounded-lg border bg-blue-50">
                   <div className="flex items-center gap-2 mb-2">
-                    <AlertTriangle className="w-5 h-5 text-orange-500" />
-                    <span className="font-medium" style={{ color: '#23174B' }}>Flagged Clauses</span>
+                    <CheckCircle className="w-5 h-5 text-blue-600" />
+                    <span className="font-medium text-blue-900">N8N Analysis Result</span>
                   </div>
-                  <ul className="space-y-1">
-                    {analysisResults.flagged_clauses?.map((clause: string, index: number) => (
-                      <li key={index} className="text-sm" style={{ color: '#DE485D' }}>
-                        • {clause}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Issues Detected */}
-                <div className="p-4 rounded-lg border">
-                  <div className="flex items-center gap-2">
-                    <AlertTriangle className="w-5 h-5 text-orange-500" />
-                    <span className="font-medium" style={{ color: '#23174B' }}>Issues Detected</span>
+                  <div className="text-sm text-blue-800 whitespace-pre-wrap">
+                    {analysisResult}
                   </div>
-                  <p className="text-2xl font-bold mt-1" style={{ color: '#23174B' }}>{analysisResults.issues_detected}</p>
                 </div>
-
-                {/* Recommendations */}
-                <div className="p-4 rounded-lg border">
-                  <h4 className="font-medium mb-2" style={{ color: '#23174B' }}>Recommendations</h4>
-                  <ul className="space-y-2">
-                    {analysisResults.recommendations?.map((rec: string, index: number) => (
-                      <li key={index} className="flex items-start gap-2 text-sm">
-                        <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                        <span style={{ color: '#6D2F5A' }}>{rec}</span>
-                      </li>
-                    ))}
-                  </ul>
+                
+                <div className="text-xs text-gray-500 italic">
+                  Analysis completed at {new Date().toLocaleString()}
                 </div>
               </div>
             ) : (
               <div className="text-center py-8" style={{ color: '#6D2F5A' }}>
                 <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
                 <p>No analysis results yet.</p>
-                <p className="text-sm">Upload a contract and click "Review Contract" to get started.</p>
+                <p className="text-sm">Upload a contract and click "Send to N8N for Analysis" to get started.</p>
+                {!webhookUrl && (
+                  <p className="text-sm text-red-600 mt-2">
+                    Please configure your N8N webhook URL first.
+                  </p>
+                )}
               </div>
             )}
           </CardContent>

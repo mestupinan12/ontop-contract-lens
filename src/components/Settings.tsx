@@ -4,9 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
+import { useSettings } from '@/contexts/SettingsContext';
 
 const Settings = () => {
-  const [settings, setSettings] = useState({
+  const [localSettings, setLocalSettings] = useState({
     notifications: {
       emailAlerts: true,
       highRiskAlerts: true,
@@ -17,17 +18,20 @@ const Settings = () => {
       autoAnalyze: false,
       riskThreshold: 70,
       retentionDays: 90
-    },
-    integration: {
-      n8nWebhook: '',
-      apiKey: ''
     }
   });
 
   const { toast } = useToast();
+  const { 
+    webhookUrl, 
+    setWebhookUrl, 
+    apiKey, 
+    setApiKey, 
+    saveSettings: saveGlobalSettings 
+  } = useSettings();
 
-  const updateSetting = (category: string, key: string, value: any) => {
-    setSettings(prev => ({
+  const updateLocalSetting = (category: string, key: string, value: any) => {
+    setLocalSettings(prev => ({
       ...prev,
       [category]: {
         ...prev[category as keyof typeof prev],
@@ -36,8 +40,13 @@ const Settings = () => {
     }));
   };
 
-  const saveSettings = () => {
-    // Save settings logic here
+  const handleSaveSettings = () => {
+    // Save the global settings (webhook URL and API key)
+    saveGlobalSettings();
+    
+    // Here you could also save localSettings to localStorage if needed
+    // localStorage.setItem('app-settings', JSON.stringify(localSettings));
+    
     toast({
       title: "Settings saved",
       description: "Your preferences have been updated successfully.",
@@ -66,8 +75,8 @@ const Settings = () => {
               <p className="text-sm text-gray-500">Receive email notifications for important events</p>
             </div>
             <Switch
-              checked={settings.notifications.emailAlerts}
-              onCheckedChange={(checked) => updateSetting('notifications', 'emailAlerts', checked)}
+              checked={localSettings.notifications.emailAlerts}
+              onCheckedChange={(checked) => updateLocalSetting('notifications', 'emailAlerts', checked)}
             />
           </div>
           
@@ -77,8 +86,8 @@ const Settings = () => {
               <p className="text-sm text-gray-500">Get notified when high-risk contracts are detected</p>
             </div>
             <Switch
-              checked={settings.notifications.highRiskAlerts}
-              onCheckedChange={(checked) => updateSetting('notifications', 'highRiskAlerts', checked)}
+              checked={localSettings.notifications.highRiskAlerts}
+              onCheckedChange={(checked) => updateLocalSetting('notifications', 'highRiskAlerts', checked)}
             />
           </div>
           
@@ -88,8 +97,8 @@ const Settings = () => {
               <p className="text-sm text-gray-500">Receive weekly summary reports</p>
             </div>
             <Switch
-              checked={settings.notifications.weeklyReports}
-              onCheckedChange={(checked) => updateSetting('notifications', 'weeklyReports', checked)}
+              checked={localSettings.notifications.weeklyReports}
+              onCheckedChange={(checked) => updateLocalSetting('notifications', 'weeklyReports', checked)}
             />
           </div>
           
@@ -99,8 +108,8 @@ const Settings = () => {
               <p className="text-sm text-gray-500">Be notified about system updates and maintenance</p>
             </div>
             <Switch
-              checked={settings.notifications.systemUpdates}
-              onCheckedChange={(checked) => updateSetting('notifications', 'systemUpdates', checked)}
+              checked={localSettings.notifications.systemUpdates}
+              onCheckedChange={(checked) => updateLocalSetting('notifications', 'systemUpdates', checked)}
             />
           </div>
         </CardContent>
@@ -121,8 +130,8 @@ const Settings = () => {
               <p className="text-sm text-gray-500">Automatically analyze contracts when uploaded</p>
             </div>
             <Switch
-              checked={settings.analysis.autoAnalyze}
-              onCheckedChange={(checked) => updateSetting('analysis', 'autoAnalyze', checked)}
+              checked={localSettings.analysis.autoAnalyze}
+              onCheckedChange={(checked) => updateLocalSetting('analysis', 'autoAnalyze', checked)}
             />
           </div>
           
@@ -134,13 +143,13 @@ const Settings = () => {
               type="range"
               min="0"
               max="100"
-              value={settings.analysis.riskThreshold}
-              onChange={(e) => updateSetting('analysis', 'riskThreshold', parseInt(e.target.value))}
+              value={localSettings.analysis.riskThreshold}
+              onChange={(e) => updateLocalSetting('analysis', 'riskThreshold', parseInt(e.target.value))}
               className="w-full"
             />
             <div className="flex justify-between text-xs text-gray-500 mt-1">
               <span>0</span>
-              <span className="font-medium">{settings.analysis.riskThreshold}</span>
+              <span className="font-medium">{localSettings.analysis.riskThreshold}</span>
               <span>100</span>
             </div>
           </div>
@@ -151,8 +160,8 @@ const Settings = () => {
             </label>
             <input
               type="number"
-              value={settings.analysis.retentionDays}
-              onChange={(e) => updateSetting('analysis', 'retentionDays', parseInt(e.target.value))}
+              value={localSettings.analysis.retentionDays}
+              onChange={(e) => updateLocalSetting('analysis', 'retentionDays', parseInt(e.target.value))}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               min="30"
               max="365"
@@ -179,8 +188,8 @@ const Settings = () => {
             </label>
             <input
               type="url"
-              value={settings.integration.n8nWebhook}
-              onChange={(e) => updateSetting('integration', 'n8nWebhook', e.target.value)}
+              value={webhookUrl}
+              onChange={(e) => setWebhookUrl(e.target.value)}
               placeholder="https://your-n8n-instance.com/webhook/contract-analysis"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
@@ -192,8 +201,8 @@ const Settings = () => {
             </label>
             <input
               type="password"
-              value={settings.integration.apiKey}
-              onChange={(e) => updateSetting('integration', 'apiKey', e.target.value)}
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
               placeholder="Enter your API key"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
@@ -240,7 +249,7 @@ const Settings = () => {
 
       {/* Save Button */}
       <div className="flex justify-end">
-        <Button onClick={saveSettings} className="flex items-center gap-2">
+        <Button onClick={handleSaveSettings} className="flex items-center gap-2">
           <Save className="w-4 h-4" />
           Save Settings
         </Button>
